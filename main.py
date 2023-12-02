@@ -8,6 +8,7 @@ from utils.input_retriever import retrieve_input
 
 patch(logging=True)
 import logging
+
 from day_factory.day_factory import DayFactory
 
 FORMAT = (
@@ -43,7 +44,7 @@ def process_days(star: int, all_days: bool = False, download_input: bool = False
     # Print Header
     result_title = "Result"
     time_title = "Elapsed Time"
-    print(f"Day\t\tStar\tTest Type\t{result_title:>16}\t|\t{time_title:>6}")
+    print(f"Day\t\tStar\t\tTest Type\t{result_title:>16}\t|\t{time_title:>6}")
     separator = "-" * 70
 
     day_factory = DayFactory(nb_day)
