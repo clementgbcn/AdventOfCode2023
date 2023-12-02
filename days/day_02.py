@@ -10,8 +10,8 @@ DICES_IN_BAG = {"blue": 14, "green": 13, "red": 12}
 class Draw:
     nb_dices: dict[str, int]
 
-    @staticmethod
-    def from_string(draw):
+    @classmethod
+    def from_string(cls, draw):
         draw_data = draw.split(", ")
         draw = {}
         for dice in draw_data:
@@ -31,12 +31,12 @@ class Game:
     game_id: int
     draws: list[Draw]
 
-    @staticmethod
-    def from_string(game):
+    @classmethod
+    def from_string(cls, game):
         data = game.split(": ")
         game_id = int(data[0].split(" ")[1])
         draws = list(map(lambda x: Draw.from_string(x), data[1].split("; ")))
-        return Game(game_id=game_id, draws=draws)
+        return cls(game_id=game_id, draws=draws)
 
     def is_possible(self):
         for draw in self.draws:
