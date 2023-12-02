@@ -1,7 +1,7 @@
 import time
 from abc import ABC, abstractmethod
 
-from day_factory.day_utils import Star, UnknownStarException, TestEnum
+from day_factory.day_utils import Star, TestEnum, UnknownStarException
 from utils.input_parser import InputParser
 
 
