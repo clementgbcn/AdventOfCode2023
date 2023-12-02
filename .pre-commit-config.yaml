@@ -1,0 +1,27 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.1.0
+    hooks:
+        - id: check-merge-conflict
+        - id: end-of-file-fixer
+        - id: check-json
+        - id: check-docstring-first
+        - id: trailing-whitespace
+          files: \.py$
+-   repo: local
+    hooks:
+    -   id: isort
+        name: isort
+        description: Run isort on allowlisted files
+        entry: 'dev/git-hooks/isort'
+        language: system
+        files: \.py$
+        verbose: true
+
+    -   id: black
+        name: Black
+        description: Run Black on whitelisted files
+        entry: 'dev/git-hooks/black'
+        language: system
+        files: \.py$
+        verbose: true
