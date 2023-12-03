@@ -9,6 +9,9 @@ class Engine:
     numbers: dict
     line_length: int
 
+    SPACE_SYMBOL = "."
+    GEAR_SYMBOL = "*"
+
     @classmethod
     def build_from_map(cls, engine_map, only_gear):
         symbols = {}
@@ -24,7 +27,9 @@ class Engine:
                     if current_nb is not None:
                         numbers[(i, j - 1)] = int(current_nb)
                         current_nb = None
-                    if (not only_gear and char != ".") or (only_gear and char == "*"):
+                    if (not only_gear and char != cls.SPACE_SYMBOL) or (
+                        only_gear and char == cls.GEAR_SYMBOL
+                    ):
                         symbols[(i, j)] = []
             if current_nb is not None:
                 numbers[(i, line_length - 1)] = int(current_nb)
@@ -34,6 +39,8 @@ class Engine:
         for pos, number in self.numbers.items():
             number_length = len(str(number))
             value_added = False
+            # Do not skip the position of the numbers since it adds complexity for a
+            # small gain in performance
             for j in range(
                 max(pos[1] - number_length, 0), min(pos[1] + 2, self.line_length)
             ):
@@ -52,7 +59,8 @@ class Day03(Day):
     def __init__(self):
         super().__init__(self)
 
-    def solve_1(self, engine_map: list[str]):
+    @staticmethod
+    def solve_1(engine_map: list[str]):
         engine = Engine.build_from_map(engine_map, False)
         symbols = engine.get_part_numbers()
         return sum(map(sum, symbols.values()))
