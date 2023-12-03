@@ -4,7 +4,7 @@
 
 Advent of Code 2023 solution in Python
 
-Run all the challenges with the command `python -m main -a"`
+Run all the challenges with the command `python -m main -a`
 
 Update the `README.md` `Results` section with `python -m main -r`
 
