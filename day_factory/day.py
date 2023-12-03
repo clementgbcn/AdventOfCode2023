@@ -18,10 +18,10 @@ class Day(ABC):
         return 0
 
     def process_first_star(self):
-        self.process_star(Star.FIRST)
+        return self.process_star(Star.FIRST)
 
     def process_second_star(self):
-        self.process_star(Star.SECOND)
+        return self.process_star(Star.SECOND)
 
     def solution_star(self, star, input_value, input_type):
         if star == Star.FIRST:
@@ -38,15 +38,13 @@ class Day(ABC):
         ).get_iterator()
         test_result = self.solution_star(star, test_case, TestEnum.TEST)
         end_test_time = (time.time_ns() - start_test_time) / 1000000
-        print(
-            f"{self.day_value:>3}\t\t{star}\t\tExample\t\t{test_result:>16}\t|\t{end_test_time:>6}ms"
-        )
         start_input_time = time.time_ns()
         input_case = InputParser(
             self.day_value, TestEnum.INPUT.value, star
         ).get_iterator()
         input_result = self.solution_star(star, input_case, TestEnum.INPUT)
         end_input_time = (time.time_ns() - start_input_time) / 1000000
-        print(
-            f"{self.day_value:>3}\t\t{star}\t\tProblem\t\t{input_result:>16}\t|\t{end_input_time:>6}ms"
-        )
+        return [
+            [self.day_value, star, "Test", test_result, end_test_time],
+            [self.day_value, star, "Problem", input_result, end_input_time],
+        ]

@@ -9,6 +9,8 @@ from utils.input_retriever import retrieve_input
 patch(logging=True)
 import logging
 
+from tabulate import SEPARATING_LINE, tabulate
+
 from day_factory.day_factory import DayFactory
 
 FORMAT = (
@@ -24,7 +26,12 @@ NB_MAX_DAY = 24
 
 
 # Get the number of Day implemented
-def process_days(star: int, all_days: bool = False, download_input: bool = False):
+def process_days(
+    star: int,
+    all_days: bool = False,
+    download_input: bool = False,
+    update_readme: bool = False,
+):
     nb_day = 0
     for d in range(1, NB_MAX_DAY + 1):
         day_name = f"Day{d:02}"
@@ -44,21 +51,45 @@ def process_days(star: int, all_days: bool = False, download_input: bool = False
     # Print Header
     result_title = "Result"
     time_title = "Elapsed Time"
-    print(f"Day\t\tStar\t\tTest Type\t{result_title:>16}\t|\t{time_title:>6}")
-    separator = "-" * 70
-
+    headers = ["Day", "Star", "Test Type", result_title, f"{time_title}, ms"]
+    table = []
     day_factory = DayFactory(nb_day)
-    if not all_days:
+    if not all_days and not update_readme:
         day = day_factory.get_day(nb_day)
-        day.process_first_star() if star == 1 else day.process_second_star()
+        table.extend(
+            day.process_first_star() if star == 1 else day.process_second_star()
+        )
     else:
         for i in range(1, nb_day + 1):
-            print(separator)
             day = day_factory.get_day(i)
-            day.process_first_star()
+            table.extend(day.process_first_star())
             day = day_factory.get_day(i)
-            day.process_second_star()
-        print(separator)
+            table.extend(day.process_second_star())
+            if i < nb_day:
+                table.append("")
+
+    result_str = tabulate(table, tablefmt="github", headers=headers)
+    # Display results in the console
+    print(result_str)
+    if update_readme:
+        update_results_in_readme(result_str)
+
+
+def update_results_in_readme(results: str):
+    new_results_section_started = False
+    with open("README.md", "r+") as file:
+        lines = file.readlines()
+        file.seek(0)  # Go back to the start of the file
+        file.truncate(0)  # Clear the file
+        for line in lines:
+            if line.strip() == "## Results":
+                new_results_section_started = True
+                file.write(line)
+                file.write(results + "\n")
+            elif new_results_section_started and line.startswith("## "):
+                new_results_section_started = False
+            if not new_results_section_started:
+                file.write(line)
 
 
 if __name__ == "__main__":
@@ -77,6 +108,9 @@ if __name__ == "__main__":
     group.add_argument(
         "-i", "--input", action="store_true", help="Retrieve inputs", default=False
     )
+    group.add_argument(
+        "-r", "--readme", action="store_true", help="Retrieve inputs", default=False
+    )
     args = parser.parse_args()
 
     # Define logger
@@ -87,4 +121,9 @@ if __name__ == "__main__":
     stream_handler.setLevel(log_level)
     logger.addHandler(stream_handler)
 
-    process_days(star=args.star, all_days=args.all, download_input=args.input)
+    process_days(
+        star=args.star,
+        all_days=args.all,
+        download_input=args.input,
+        update_readme=args.readme,
+    )
