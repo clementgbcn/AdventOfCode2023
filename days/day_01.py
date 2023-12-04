@@ -14,6 +14,9 @@ DIGIT = {
 
 
 class Day01(Day):
+    FIRST_STAR_TEST_RESULT = 209
+    SECOND_STAR_TEST_RESULT = 281
+
     def __init__(self):
         super().__init__(self)
 

@@ -1,6 +1,7 @@
 import argparse
 import importlib
 from pathlib import Path
+from typing import Optional
 
 from ddtrace import patch
 
@@ -28,21 +29,25 @@ NB_MAX_DAY = 24
 # Get the number of Day implemented
 def process_days(
     star: int,
+    day: Optional[int],
     all_days: bool = False,
     download_input: bool = False,
     update_readme: bool = False,
 ):
     nb_day = 0
-    for d in range(1, NB_MAX_DAY + 1):
-        day_name = f"Day{d:02}"
-        day_file_name = f"days.day_{d:02}"
-        try:
-            getattr(importlib.import_module(day_file_name), day_name)
-            nb_day = d
-        except ModuleNotFoundError:
-            break
-    if nb_day == 0:
-        raise Exception("No Day implemented")
+    if day is not None:
+        nb_day = day
+    else:
+        for d in range(1, NB_MAX_DAY + 1):
+            day_name = f"Day{d:02}"
+            day_file_name = f"days.day_{d:02}"
+            try:
+                getattr(importlib.import_module(day_file_name), day_name)
+                nb_day = d
+            except ModuleNotFoundError:
+                break
+        if nb_day == 0:
+            raise Exception("No Day implemented")
 
     if download_input:
         retrieve_input(nb_day, Path("inputs"))
@@ -51,14 +56,16 @@ def process_days(
     # Print Header
     result_title = "Result"
     time_title = "Elapsed Time"
-    headers = ["Day", "Star", "Test Type", result_title, f"{time_title}, ms"]
+    headers = ["Day", "Star", result_title, f"{time_title}, ms"]
     table = []
     day_factory = DayFactory(nb_day)
     if not all_days and not update_readme:
         day = day_factory.get_day(nb_day)
-        table.extend(
-            day.process_first_star() if star == 1 else day.process_second_star()
-        )
+        if star == 1 or star is None:
+            table.extend(day.process_first_star())
+        if star == 2 or star is None:
+            table.extend(day.process_second_star())
+
     else:
         for i in range(1, nb_day + 1):
             day = day_factory.get_day(i)
@@ -98,10 +105,11 @@ if __name__ == "__main__":
     parser.add_argument(
         "-v", "--verbose", action="store_true", help="Display debug log"
     )
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument(
-        "-s", "--star", type=int, help="Star to process", default=1, choices=[1, 2]
+    parser.add_argument(
+        "-s", "--star", type=int, help="Star to process", default=None, choices=[1, 2]
     )
+    group = parser.add_mutually_exclusive_group()
+
     group.add_argument(
         "-a", "--all", action="store_true", help="Process all days", default=False
     )
@@ -111,6 +119,7 @@ if __name__ == "__main__":
     group.add_argument(
         "-r", "--readme", action="store_true", help="Retrieve inputs", default=False
     )
+    group.add_argument("-d", "--day", type=int, help="Day to proceed", default=None)
     args = parser.parse_args()
 
     # Define logger
@@ -123,6 +132,7 @@ if __name__ == "__main__":
 
     process_days(
         star=args.star,
+        day=args.day,
         all_days=args.all,
         download_input=args.input,
         update_readme=args.readme,

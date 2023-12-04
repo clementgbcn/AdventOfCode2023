@@ -56,6 +56,9 @@ class Game:
 
 
 class Day02(Day):
+    FIRST_STAR_TEST_RESULT = 8
+    SECOND_STAR_TEST_RESULT = 2286
+
     def __init__(self):
         super().__init__(self)
 

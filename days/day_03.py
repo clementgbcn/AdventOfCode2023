@@ -56,6 +56,9 @@ class Engine:
 
 
 class Day03(Day):
+    FIRST_STAR_TEST_RESULT = 4361
+    SECOND_STAR_TEST_RESULT = 467835
+
     def __init__(self):
         super().__init__(self)
 

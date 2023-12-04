@@ -6,6 +6,9 @@ from utils.input_parser import InputParser
 
 
 class Day(ABC):
+    FIRST_STAR_TEST_RESULT = None
+    SECOND_STAR_TEST_RESULT = None
+
     def __init__(self, day_inst):
         self.day_value = int(day_inst.__class__.__name__[-2:])
 
@@ -32,12 +35,20 @@ class Day(ABC):
             raise UnknownStarException(star)
 
     def process_star(self, star):
-        start_test_time = time.time_ns()
+        # Run the test
         test_case = InputParser(
             self.day_value, TestEnum.TEST.value, star
         ).get_iterator()
         test_result = self.solution_star(star, test_case, TestEnum.TEST)
-        end_test_time = (time.time_ns() - start_test_time) / 1000000
+        expected_result = (
+            self.FIRST_STAR_TEST_RESULT
+            if star == Star.FIRST
+            else self.SECOND_STAR_TEST_RESULT
+        )
+        assert (
+            expected_result == test_result
+        ), f"Test failed for {star} star: {test_result} != {expected_result}"
+        # Compute the result
         start_input_time = time.time_ns()
         input_case = InputParser(
             self.day_value, TestEnum.INPUT.value, star
@@ -45,6 +56,5 @@ class Day(ABC):
         input_result = self.solution_star(star, input_case, TestEnum.INPUT)
         end_input_time = (time.time_ns() - start_input_time) / 1000000
         return [
-            [self.day_value, star, "Test", test_result, end_test_time],
-            [self.day_value, star, "Problem", input_result, end_input_time],
+            [self.day_value, star, input_result, end_input_time],
         ]

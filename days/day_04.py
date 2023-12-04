@@ -29,6 +29,9 @@ class Card:
 
 
 class Day04(Day):
+    FIRST_STAR_TEST_RESULT = 13
+    SECOND_STAR_TEST_RESULT = 30
+
     def __init__(self):
         super().__init__(self)
 
