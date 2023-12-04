@@ -1,5 +1,6 @@
 .python-version
 /build/
+inputs/*.txt
 /lib/**/build/
 *.pyc
 *.log
