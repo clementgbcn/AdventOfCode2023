@@ -16,7 +16,7 @@ class InputParser:
         self.build_file_path()
 
     def build_file_path(self):
-        if self.star == Star.SECOND and self.input_type == TestEnum.TEST.value:
+        if self.input_type == TestEnum.TEST.value:
             self.filename = f"{self.day}-{self.input_type}-{self.star.value}.txt"
             self.filepath = InputParser.FOLDER / Path(self.filename)
             if os.path.exists(self.filepath):
