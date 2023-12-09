@@ -28,13 +28,18 @@ class Day08(Day):
         super().__init__(self)
 
     @staticmethod
-    def solve_1(paths: Iterator[str]):
+    def parse_paths(paths: Iterator[str]) -> (str, dict[str, Edge]):
         order = next(paths)
         next(paths)
         mapping = {
             p[0]: Edge(p[1], p[2])
             for p in map(lambda path: Day08.PATH_PATTERN.findall(path)[0], paths)
         }
+        return order, mapping
+
+    @staticmethod
+    def solve_1(paths: Iterator[str]):
+        order, mapping = Day08.parse_paths(paths)
         current_pos = "AAA"
         step = 0
         while current_pos != "ZZZ":
@@ -44,12 +49,7 @@ class Day08(Day):
 
     @staticmethod
     def solve_2(paths: Iterator[str]):
-        order = next(paths)
-        next(paths)
-        mapping = {
-            p[0]: Edge(p[1], p[2])
-            for p in map(lambda path: Day08.PATH_PATTERN.findall(path)[0], paths)
-        }
+        order, mapping = Day08.parse_paths(paths)
         current_positions = list(filter(lambda p: p[-1] == "A", mapping.keys()))
         data = []
         for pos in current_positions:
