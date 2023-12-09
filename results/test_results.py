@@ -1,11 +1,13 @@
 import json
 import sys, os
+import logging
 
 sys.path.append(os.path.realpath(os.path.dirname(__file__) + "/.."))
 
-
 from day_factory.day_factory import DayFactory
 from day_factory.day_utils import TestEnum, Star
+
+logger = logging.getLogger(__name__)
 
 
 def check_results(input_type: TestEnum) -> None:
@@ -23,8 +25,17 @@ def check_results(input_type: TestEnum) -> None:
                 ), f"Day{day_idx} for Star {star} with {input_type.name} input failed, {result} != {expected_result}"
 
 
-def test_check_results():
+def test_test_results():
     check_results(TestEnum.TEST)
+    if os.path.exists("inputs/problems.json"):
+        check_results(TestEnum.PROBLEM)
+
+
+def test_problem_results():
+    if os.path.exists("inputs/problems.json"):
+        check_results(TestEnum.PROBLEM)
+    else:
+        logger.info("No problem results to check")
 
 
 if __name__ == "__main__":
