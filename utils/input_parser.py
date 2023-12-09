@@ -16,13 +16,16 @@ class InputParser:
         self.build_file_path()
 
     def build_file_path(self):
-        if self.input_type == TestEnum.TEST.value:
-            self.filename = f"{self.day}-{self.input_type}-{self.star.value}.txt"
-            self.filepath = InputParser.FOLDER / Path(self.filename)
+        input_type_folder = InputParser.FOLDER / Path(
+            f"{self.input_type.name.lower()}s"
+        )
+        if self.input_type == TestEnum.TEST:
+            self.filename = f"{self.day}-{self.star.value}.txt"
+            self.filepath = input_type_folder / Path(self.filename)
             if os.path.exists(self.filepath):
                 return
-        self.filename = f"{self.day}-{self.input_type}.txt"
-        self.filepath = InputParser.FOLDER / Path(self.filename)
+        self.filename = f"{self.day}.txt"
+        self.filepath = input_type_folder / Path(self.filename)
 
     def get_iterator(self):
         with open(self.filepath, "r") as f:

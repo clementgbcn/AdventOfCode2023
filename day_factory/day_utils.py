@@ -1,9 +1,10 @@
+from dataclasses import dataclass
 from enum import Enum
 
 
 class TestEnum(Enum):
     TEST = 0
-    INPUT = 1
+    PROBLEM = 1
 
 
 class Star(Enum):
@@ -20,3 +21,11 @@ class Star(Enum):
 class UnknownStarException(Exception):
     def __init__(self, star):
         super().__init__("Unknown Star: " + star)
+
+
+@dataclass
+class Result:
+    day: int
+    test: TestEnum
+    star: Star
+    result: int

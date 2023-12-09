@@ -50,7 +50,7 @@ def process_days(
             raise Exception("No Day implemented")
 
     if download_input:
-        retrieve_input(nb_day, Path("inputs"))
+        retrieve_input(nb_day, Path("inputs/problems"))
         return
 
     # Print Header
