@@ -32,7 +32,7 @@ def test_test_results():
 
 
 def test_problem_results():
-    if os.path.exists("inputs/problems.json"):
+    if os.path.exists("inputs/problems"):
         check_results(TestEnum.PROBLEM)
     else:
         logger.info("No problem results to check")
