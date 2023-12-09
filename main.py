@@ -10,7 +10,7 @@ from utils.input_retriever import retrieve_input
 patch(logging=True)
 import logging
 
-from tabulate import SEPARATING_LINE, tabulate
+from tabulate import tabulate
 
 from day_factory.day_factory import DayFactory
 
@@ -75,7 +75,7 @@ def process_days(
             if i < nb_day:
                 table.append("")
 
-    result_str = tabulate(table, tablefmt="github", headers=headers)
+    result_str = tabulate(table, tablefmt=".github", headers=headers)
     # Display results in the console
     print(result_str)
     if update_readme:
