@@ -1,7 +1,11 @@
 import json
+import sys, os
+
+sys.path.append(os.path.realpath(os.path.dirname(__file__) + "/.."))
+
 
 from day_factory.day_factory import DayFactory
-from day_factory.day_utils import Star, TestEnum
+from day_factory.day_utils import TestEnum, Star
 
 
 def check_results(input_type: TestEnum) -> None:
@@ -17,6 +21,10 @@ def check_results(input_type: TestEnum) -> None:
                 assert (
                     result == expected_result
                 ), f"Day{day_idx} for Star {star} with {input_type.name} input failed, {result} != {expected_result}"
+
+
+def test_check_results():
+    check_results(TestEnum.TEST)
 
 
 if __name__ == "__main__":

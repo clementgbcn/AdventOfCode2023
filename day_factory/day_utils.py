@@ -3,6 +3,7 @@ from enum import Enum
 
 
 class TestEnum(Enum):
+    __test__ = False
     TEST = 0
     PROBLEM = 1
 
