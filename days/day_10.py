@@ -43,12 +43,8 @@ class Tiles(Enum):
     def directions(self):
         return self.value[1]
 
-    @classmethod
-    def get_tile(cls, code):
-        for tile in cls:
-            if tile.code == code:
-                return tile
-        raise Exception(f"Unknown tile {code}")
+
+TILES_MAPPING = {tile.code: tile for tile in Tiles}
 
 
 @dataclass
@@ -59,7 +55,7 @@ class Area:
     @classmethod
     def build_from_string(cls, string):
         area = list(
-            map(lambda line: list(map(lambda c: Tiles.get_tile(c), line[::])), string)
+            map(lambda line: list(map(lambda c: TILES_MAPPING[c], line[::])), string)
         )
         i, j = 0, 0
         found = False

@@ -23,4 +23,4 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        pytest --md-report --md-report-flavor gfm --md-report-output md_report.md
+        pytest -o log_cli=true --md-report --md-report-flavor gfm --md-report-output md_report.md
