@@ -14,7 +14,7 @@ def retrieve_input(day: int, input_folder: Path) -> None:
     req.add_header("cookie", cookie)
     contents = urllib.request.urlopen(req).read()
     # check file exist before writing and stop if it does
-    input_file = f"{day}-1.txt"
+    input_file = f"{day}.txt"
     if (input_folder / input_file).exists():
         logging.warning("Input file already exists. Stop here.")
         return
