@@ -75,7 +75,7 @@ def process_days(
             if i < nb_day:
                 table.append("")
 
-    result_str = tabulate(table, tablefmt=".github", headers=headers)
+    result_str = tabulate(table, tablefmt="github", headers=headers)
     # Display results in the console
     print(result_str)
     if update_readme:
@@ -129,6 +129,8 @@ if __name__ == "__main__":
     stream_handler = logging.StreamHandler()
     stream_handler.setLevel(log_level)
     logger.addHandler(stream_handler)
+
+    logger.info("Starting Advent of Code 2023")
 
     process_days(
         star=args.star,
