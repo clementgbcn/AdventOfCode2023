@@ -1,11 +1,12 @@
 import json
-import sys, os
+import sys
+import os
 import logging
 
 sys.path.append(os.path.realpath(os.path.dirname(__file__) + "/.."))
 
-from day_factory.day_factory import DayFactory
-from day_factory.day_utils import TestEnum, Star
+from day_factory.day_factory import DayFactory  # noqa: E402
+from day_factory.day_utils import TestEnum, Star  # noqa: E402
 
 logger = logging.getLogger(__name__)
 

@@ -1,10 +1,8 @@
 from dataclasses import dataclass
 from enum import Enum
-from functools import reduce
 from typing import Iterator
 
 from day_factory.day import Day
-from utils.utils import extract_int
 
 
 class Tiles(Enum):
@@ -90,8 +88,8 @@ class Day10(Day):
         while len(current_positions) > 0:
             next_positions = []
             for pos in current_positions:
-                for dir in area[pos[0]][pos[1]].directions.keys():
-                    x, y = dir[0], dir[1]
+                for direction in area[pos[0]][pos[1]].directions.keys():
+                    x, y = direction[0], direction[1]
                     if (-x, -y) in area[pos[0] + x][pos[1] + y].directions and (
                         pos[0] + x,
                         pos[1] + y,
@@ -101,6 +99,49 @@ class Day10(Day):
             current_positions = next_positions
             distance += 1
         return distance - 1
+
+    @staticmethod
+    def propagate_side(
+        area: list[list[Tiles]],
+        path: set[tuple[int, int]],
+        side_a: set[tuple[int, int]],
+        side_b: set[tuple[int, int]],
+    ):
+        for i in range(len(area)):
+            for j in range(len(area[i])):
+                if (i, j) in path or (i, j) in side_a and (i, j) in side_b:
+                    continue
+                encountered = set()
+                current_set = [(i, j)]
+                side_type = None
+                while len(current_set) > 0:
+                    cur = current_set.pop()
+                    if (
+                        cur not in path
+                        and cur not in side_a
+                        and cur not in side_b
+                        and cur not in encountered
+                    ):
+                        encountered.add(cur)
+                        for x in [-1, 0, 1]:
+                            for y in [-1, 0, 1]:
+                                if (
+                                    0 <= cur[0] + x < len(area)
+                                    and 0 <= cur[1] + y < len(area[0])
+                                    and (x != 0 or y != 0)
+                                ):
+                                    current_set.append((cur[0] + x, cur[1] + y))
+                    elif cur in path:
+                        continue
+                    elif cur in side_a:
+                        side_type = "a"
+                    elif cur in side_b:
+                        side_type = "b"
+                if side_type == "a":
+                    side_a.update(encountered)
+                else:
+                    side_b.update(encountered)
+        return
 
     @staticmethod
     def solve_2(desert: Iterator[str]):
@@ -114,8 +155,8 @@ class Day10(Day):
         while len(current_positions) > 0:
             next_positions = []
             for pos in current_positions:
-                for dir, side in area[pos[0]][pos[1]].directions.items():
-                    x, y = dir[0], dir[1]
+                for direction, side in area[pos[0]][pos[1]].directions.items():
+                    x, y = direction[0], direction[1]
                     if (-x, -y) in area[pos[0] + x][pos[1] + y].directions and (
                         pos[0] + x,
                         pos[1] + y,
@@ -132,39 +173,7 @@ class Day10(Day):
         side_a.difference_update(path)
         side_b.difference_update(path)
         # Propagate the sides
-        for i in range(len(area)):
-            for j in range(len(area[i])):
-                if (i, j) not in path and (i, j) not in side_a and (i, j) not in side_b:
-                    encountered = set()
-                    current_set = [(i, j)]
-                    side_type = None
-                    while len(current_set) > 0:
-                        cur = current_set.pop()
-                        if (
-                            cur not in path
-                            and cur not in side_a
-                            and cur not in side_b
-                            and cur not in encountered
-                        ):
-                            encountered.add(cur)
-                            for x in [-1, 0, 1]:
-                                for y in [-1, 0, 1]:
-                                    if (
-                                        0 <= cur[0] + x < len(area)
-                                        and 0 <= cur[1] + y < len(area[0])
-                                        and (x != 0 or y != 0)
-                                    ):
-                                        current_set.append((cur[0] + x, cur[1] + y))
-                        elif cur in path:
-                            continue
-                        elif cur in side_a:
-                            side_type = "a"
-                        elif cur in side_b:
-                            side_type = "b"
-                    if side_type == "a":
-                        side_a.update(encountered)
-                    else:
-                        side_b.update(encountered)
+        Day10.propagate_side(area, path, side_a, side_b)
         return len(side_a) if (0, 0) in side_b else len(side_b)
 
     def solution_first_star(self, input_value, input_type):

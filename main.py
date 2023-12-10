@@ -4,15 +4,13 @@ from pathlib import Path
 from typing import Optional
 
 from ddtrace import patch
-
-from utils.input_retriever import retrieve_input
-
-patch(logging=True)
-import logging
-
 from tabulate import tabulate
 
 from day_factory.day_factory import DayFactory
+from utils.input_retriever import retrieve_input
+
+patch(logging=True)
+import logging  # noqa: E402
 
 FORMAT = (
     "%(asctime)s %(levelname)s [%(name)s] [%(filename)s:%(lineno)d] "

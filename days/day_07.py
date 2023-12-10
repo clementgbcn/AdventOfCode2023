@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from functools import reduce, cmp_to_key
+from functools import cmp_to_key
 from typing import Iterator
 
 from day_factory.day import Day

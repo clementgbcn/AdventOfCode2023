@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from day_factory.day_utils import Star, TestEnum
+from day_factory.day_utils import TestEnum
 
 
 class InputParser:
