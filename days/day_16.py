@@ -28,48 +28,6 @@ class Beam:
 
 
 @dataclass
-class Contraption:
-    grid: list[str]
-
-    def propagate_beam(self, beam: Beam):
-        beams = [beam]
-        tiles = {}
-        while len(beams) > 0:
-            b = beams.pop(0)
-            if b.xy in tiles and b.dxdy in tiles[b.xy]:
-                continue
-            if b.xy not in tiles:
-                tiles[b.xy] = set()
-            tiles[b.xy].add(b.dxdy)
-            b_nxt = b.get_nxt()
-            if not 0 <= b_nxt.x < len(self.grid) or not 0 <= b_nxt.y < len(
-                self.grid[0]
-            ):
-                # It is out of the grid
-                continue
-            nxt_tile = self.grid[b_nxt.x][b_nxt.y]
-            if nxt_tile == ".":
-                beams.append(b_nxt)
-            elif nxt_tile == "/":
-                beams.append(b.get_nxt_redirected(-b.dy, -b.dx))
-            elif nxt_tile == "\\":
-                beams.append(b.get_nxt_redirected(b.dy, b.dx))
-            elif nxt_tile == "|":
-                beams += (
-                    [b_nxt]
-                    if b.dy == 0
-                    else [b.get_nxt_redirected(k, 0) for k in [-1, 1]]
-                )
-            elif nxt_tile == "-":
-                beams += (
-                    [b_nxt]
-                    if b.dx == 0
-                    else [b.get_nxt_redirected(0, k) for k in [-1, 1]]
-                )
-        return len(tiles) - 1
-
-
-@dataclass
 class SparseContraption:
     grid: dict[int, dict[int, str]]
     grid_t: dict[int, dict[int, str]]
@@ -95,14 +53,20 @@ class SparseContraption:
 
     def propagate_beam(self, beam: Beam):
         beams = [beam]
-        tiles = {}
+        bars = {}
+        encountered = set()
         while len(beams) > 0:
             b = beams.pop(0)
-            if b.xy in tiles and b.dxdy in tiles[b.xy]:
+            if b.xy in bars and b.dxdy in bars[b.xy]:
                 continue
-            if b.xy not in tiles:
-                tiles[b.xy] = set()
-            tiles[b.xy].add(b.dxdy)
+            if (
+                b.x in self.grid
+                and b.y in self.grid[b.x]
+                and self.grid[b.x][b.y] in ["|", "-"]
+            ):
+                bars.setdefault(b.xy, set()).add(b.dxdy)
+            else:
+                encountered.add(b.xy)
             b_nxt = b.get_nxt()
             if not 0 <= b_nxt.x < self.height or not 0 <= b_nxt.y < self.width:
                 # It is out of the grid
@@ -113,57 +77,41 @@ class SparseContraption:
                     idx = bisect.bisect_right(keys, b.y)
                     high = keys[idx] if 0 <= idx < len(keys) else self.width
                     for j in range(b_nxt.y, high - 1):
-                        if (b.x, j) not in tiles:
-                            tiles[(b.x, j)] = set()
-                        tiles[(b.x, j)].add((0, 1))
+                        encountered.add((b.x, j))
                     if high < self.width:
                         beams.append(Beam(b.x, high - 1, b.dx, b.dy))
                     else:
-                        if (b.x, high - 1) not in tiles:
-                            tiles[(b.x, high - 1)] = set()
-                        tiles[(b.x, high - 1)].add((0, 1))
+                        encountered.add((b.x, high - 1))
                 if b.dx == 0 and b.dy == -1:
                     keys = list(self.grid[b.x].keys())
                     idx = bisect.bisect_left(keys, b.y) - 1
                     low = keys[idx] if 0 <= idx < len(keys) else -1
                     for j in range(b_nxt.y, low + 1, -1):
-                        if (b.x, j) not in tiles:
-                            tiles[(b.x, j)] = set()
-                        tiles[(b.x, j)].add((0, -1))
+                        encountered.add((b.x, j))
                     if low > -1:
                         beams.append(Beam(b.x, low + 1, b.dx, b.dy))
                     else:
-                        if (b.x, low + 1) not in tiles:
-                            tiles[(b.x, low + 1)] = set()
-                        tiles[(b.x, low + 1)].add((0, -1))
+                        encountered.add((b.x, low + 1))
                 if b.dx == 1 and b.dy == 0:
                     keys = list(self.grid_t[b.y].keys())
                     idx = bisect.bisect_right(keys, b.x)
                     high = keys[idx] if 0 <= idx < len(keys) else self.height
                     for i in range(b_nxt.x, high - 1):
-                        if (i, b.y) not in tiles:
-                            tiles[(i, b.y)] = set()
-                        tiles[(i, b.y)].add((1, 0))
+                        encountered.add((i, b.y))
                     if high < self.height:
                         beams.append(Beam(high - 1, b.y, b.dx, b.dy))
                     else:
-                        if (high - 1, b.y) not in tiles:
-                            tiles[(high - 1, b.y)] = set()
-                        tiles[(high - 1, b.y)].add((1, 0))
+                        encountered.add((high - 1, b.y))
                 if b.dx == -1 and b.dy == 0:
                     keys = list(self.grid_t[b.y].keys())
                     idx = bisect.bisect_left(keys, b.x) - 1
                     low = keys[idx] if 0 <= idx < len(keys) else -1
                     for i in range(b_nxt.x, low + 1, -1):
-                        if (i, b.y) not in tiles:
-                            tiles[(i, b.y)] = set()
-                        tiles[(i, b.y)].add((-1, 0))
+                        encountered.add((i, b.y))
                     if low > -1:
                         beams.append(Beam(low + 1, b.y, b.dx, b.dy))
                     else:
-                        if (low + 1, b.y) not in tiles:
-                            tiles[(low + 1, b.y)] = set()
-                        tiles[(low + 1, b.y)].add((-1, 0))
+                        encountered.add((low + 1, b.y))
                 continue
             nxt_tile = self.grid[b_nxt.x][b_nxt.y]
             if nxt_tile == "/":
@@ -182,7 +130,7 @@ class SparseContraption:
                     if b.dx == 0
                     else [b.get_nxt_redirected(0, k) for k in [-1, 1]]
                 )
-        return len(tiles) - 1
+        return len(bars) + len(encountered) - 1
 
 
 class Day16(Day):
@@ -193,30 +141,9 @@ class Day16(Day):
         super().__init__(self)
 
     @staticmethod
-    def solve_1_old(contraption_str: Iterator[str]):
-        contraption = Contraption(list(contraption_str))
-        return contraption.propagate_beam(Beam(0, -1, 0, 1))
-
-    @staticmethod
     def solve_1(contraption_str: Iterator[str]):
         contraption = SparseContraption.build_from_string(contraption_str)
         return contraption.propagate_beam(Beam(0, -1, 0, 1))
-
-    @staticmethod
-    def solve_2_old(contraption_str: Iterator[str]):
-        contraption = Contraption(list(contraption_str))
-        max_energy = 0
-        for i in range(len(contraption.grid)):
-            for j in [(-1, 1), (len(contraption.grid[0]), -1)]:
-                max_energy = max(
-                    max_energy, contraption.propagate_beam(Beam(i, j[0], 0, j[1]))
-                )
-        for j in range(len(contraption.grid[0])):
-            for i in [(-1, 1), (len(contraption.grid), -1)]:
-                max_energy = max(
-                    max_energy, contraption.propagate_beam(Beam(i[0], j, i[1], 0))
-                )
-        return max_energy
 
     @staticmethod
     def solve_2(contraption_str: Iterator[str]):
