@@ -1,4 +1,5 @@
 import bisect
+from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from typing import Iterator
 
@@ -148,18 +149,18 @@ class Day16(Day):
     @staticmethod
     def solve_2(contraption_str: Iterator[str]):
         contraption = SparseContraption.build_from_string(contraption_str)
-        max_energy = 0
-        for i in range(contraption.height):
-            for j in [(-1, 1), (contraption.height, -1)]:
-                max_energy = max(
-                    max_energy, contraption.propagate_beam(Beam(i, j[0], 0, j[1]))
-                )
-        for j in range(contraption.width):
-            for i in [(-1, 1), (contraption.height, -1)]:
-                max_energy = max(
-                    max_energy, contraption.propagate_beam(Beam(i[0], j, i[1], 0))
-                )
-        return max_energy
+        with ProcessPoolExecutor() as executor:
+            running_tasks = [
+                executor.submit(contraption.propagate_beam, Beam(i, j[0], 0, j[1]))
+                for i in range(contraption.height)
+                for j in [(-1, 1), (contraption.height, -1)]
+            ]
+            running_tasks += [
+                executor.submit(contraption.propagate_beam, Beam(i[0], j, i[1], 0))
+                for j in range(contraption.width)
+                for i in [(-1, 1), (contraption.height, -1)]
+            ]
+            return max(map(lambda running_task: running_task.result(), running_tasks))
 
     def solution_first_star(self, input_value, input_type):
         return self.solve_1(input_value)
