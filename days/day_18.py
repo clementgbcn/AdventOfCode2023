@@ -17,7 +17,7 @@ class Day18(Day):
     HEX_DIR = ["R", "D", "L", "U"]
 
     @staticmethod
-    def solve_1(dig_plans_str: Iterator[str]):
+    def solve_1_old(dig_plans_str: Iterator[str]):
         current_point = (0, 0)
         digged = {current_point}
         for line in dig_plans_str:
@@ -41,6 +41,78 @@ class Day18(Day):
         return len(visited) + len(digged)
 
     @staticmethod
+    def solve_1(dig_plans_str: Iterator[str]):
+        current_point = (0, 0)
+        rows = {0: {(0, 0, None, None)}}
+        orders = []
+        for line in dig_plans_str:
+            split_line = line.split(" ")
+            nb = int(split_line[1])
+            d = Day18.DIRECTION[split_line[0]]
+            orders.append((nb, d))
+        for i, order in enumerate(orders):
+            nb = order[0]
+            d = order[1]
+            if d[0] == 0:
+                prev_dir = orders[i - 1][1] if i - 1 >= 0 else None
+                next_dir = orders[i + 1][1] if i + 1 < len(orders) else None
+                rows[current_point[0]].remove(
+                    (current_point[1], current_point[1], None, None)
+                )
+                if d[1] > 0:
+                    rows[current_point[0]].add(
+                        (
+                            current_point[1],
+                            current_point[1] + nb * d[1],
+                            prev_dir,
+                            next_dir,
+                        )
+                    )
+                else:
+                    rows[current_point[0]].add(
+                        (
+                            current_point[1] + nb * d[1],
+                            current_point[1],
+                            prev_dir,
+                            next_dir,
+                        )
+                    )
+                current_point = (current_point[0], current_point[1] + nb * d[1])
+            else:
+                for i in range(nb):
+                    current_point = (current_point[0] + d[0], current_point[1] + d[1])
+                    if current_point[0] not in rows:
+                        rows[current_point[0]] = set()
+                    rows[current_point[0]].add(
+                        (current_point[1], current_point[1], None, None)
+                    )
+        count = 0
+        rows[0].remove((0, 0, None, None))
+        for row in sorted(rows.keys()):
+            indexes = sorted(rows[row], key=lambda x: x[0])
+            prev = count
+            count += indexes[0][1] - indexes[0][0] + 1
+            is_in = True
+            if (
+                indexes[0][2] is not None
+                and indexes[0][3] is not None
+                and indexes[0][2] != indexes[0][3]
+            ):
+                is_in = False
+            for i in range(len(indexes) - 1):
+                if is_in:
+                    count += indexes[i + 1][0] - indexes[i][1] - 1
+                is_in = not is_in
+                count += indexes[i + 1][1] - indexes[i + 1][0] + 1
+                if (
+                    indexes[i + 1][2] is not None
+                    and indexes[i + 1][3] is not None
+                    and indexes[i + 1][2] != indexes[i + 1][3]
+                ):
+                    is_in = not is_in
+        return count
+
+    @staticmethod
     def solve_2(dig_plans_str: Iterator[str]):
         current_point = (0, 0)
         rows = {0: {(0, 0, None, None)}}
@@ -59,9 +131,24 @@ class Day18(Day):
                 rows[current_point[0]].remove(
                     (current_point[1], current_point[1], None, None)
                 )
-                rows[current_point[0]].add(
-                    (current_point[1], current_point[1] + nb * d[1], prev_dir, next_dir)
-                )
+                if d[1] > 0:
+                    rows[current_point[0]].add(
+                        (
+                            current_point[1],
+                            current_point[1] + nb * d[1],
+                            prev_dir,
+                            next_dir,
+                        )
+                    )
+                else:
+                    rows[current_point[0]].add(
+                        (
+                            current_point[1] + nb * d[1],
+                            current_point[1],
+                            prev_dir,
+                            next_dir,
+                        )
+                    )
                 current_point = (current_point[0], current_point[1] + nb * d[1])
             else:
                 for i in range(nb):
@@ -71,8 +158,6 @@ class Day18(Day):
                     rows[current_point[0]].add(
                         (current_point[1], current_point[1], None, None)
                     )
-                    if current_point[0] == 56407:
-                        print(rows[current_point[0]])
         count = 0
         rows[0].remove((0, 0, None, None))
         for row in sorted(rows.keys()):
@@ -82,7 +167,7 @@ class Day18(Day):
             if (
                 indexes[0][2] is not None
                 and indexes[0][3] is not None
-                and indexes[0][2] == indexes[0][3]
+                and indexes[0][2] != indexes[0][3]
             ):
                 is_in = False
             for i in range(len(indexes) - 1):
@@ -95,7 +180,6 @@ class Day18(Day):
                     and indexes[i + 1][3] is not None
                     and indexes[i + 1][2] != indexes[i + 1][3]
                 ):
-                    print(row, indexes)
                     is_in = not is_in
         return count
 
