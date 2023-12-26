@@ -45,7 +45,7 @@ class Day(ABC):
         )
         assert (
             expected_result == test_result
-        ), f"Test failed for {star} star: {test_result} != {expected_result}"
+        ), f"Test failed for {star} star at Day {self.day_value}: {test_result} != {expected_result}"
         # Compute the result
         start_input_time = time.time_ns()
         input_case = InputParser(self.day_value, TestEnum.PROBLEM, star).get_iterator()

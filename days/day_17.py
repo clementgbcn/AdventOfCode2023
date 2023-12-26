@@ -71,7 +71,6 @@ class HeatMap:
             direction_strike = (
                 1 if d != (current_point[2], current_point[3]) else 1 + current_point[4]
             )
-            save = nxt_point
             nxt_point, direction_strike = self.constraint_func(
                 direction_strike, nxt_point, d, current_distance, visited, distances
             )

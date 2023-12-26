@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 def check_results(input_type: TestEnum) -> None:
     """Check the results of the simulation."""
-    day_factory = DayFactory(24)
+    day_factory = DayFactory(25)
     file = f"results/{input_type.name.lower()}s.json"
     with open(file, "r") as f:
         data = json.load(f)
@@ -28,8 +28,6 @@ def check_results(input_type: TestEnum) -> None:
 
 def test_test_results():
     check_results(TestEnum.TEST)
-    if os.path.exists("inputs/problems.json"):
-        check_results(TestEnum.PROBLEM)
 
 
 def test_problem_results():

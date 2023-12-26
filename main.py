@@ -14,14 +14,15 @@ import logging  # noqa: E402
 
 FORMAT = (
     "%(asctime)s %(levelname)s [%(name)s] [%(filename)s:%(lineno)d] "
-    "[dd.service=%(dd.service)s dd.env=%(dd.env)s dd.version=%(dd.version)s dd.trace_id=%(dd.trace_id)s dd.span_id=%(dd.span_id)s] "
+    "[dd.service=%(dd.service)s dd.env=%(dd.env)s dd.version=%(dd.version)s "
+    "dd.trace_id=%(dd.trace_id)s dd.span_id=%(dd.span_id)s] "
     "- %(message)s"
 )
 logging.basicConfig(format=FORMAT)
 log = logging.getLogger(__name__)
 log.level = logging.INFO
 
-NB_MAX_DAY = 24
+NB_MAX_DAY = 25
 
 
 # Get the number of Day implemented

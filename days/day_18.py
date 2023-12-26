@@ -1,6 +1,3 @@
-import bisect
-import sys
-from dataclasses import dataclass
 from typing import Iterator
 
 from day_factory.day import Day
@@ -90,7 +87,6 @@ class Day18(Day):
         rows[0].remove((0, 0, None, None))
         for row in sorted(rows.keys()):
             indexes = sorted(rows[row], key=lambda x: x[0])
-            prev = count
             count += indexes[0][1] - indexes[0][0] + 1
             is_in = True
             if (

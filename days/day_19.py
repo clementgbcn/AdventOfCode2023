@@ -1,7 +1,4 @@
-import bisect
 import re
-import sys
-from dataclasses import dataclass
 from functools import reduce
 from typing import Iterator
 
@@ -21,8 +18,8 @@ class Day19(Day):
         step_pattern = re.compile(r"([a-z])([<>])(-?\d+):([a-zAR]+)")
         data_pattern = re.compile(r"([a-z])=(-?\d+)")
         workflows = {}
-        while (l := next(workflows_str)) != "":
-            data = pattern.findall(l)[0]
+        while (line := next(workflows_str)) != "":
+            data = pattern.findall(line)[0]
             name = data[0]
             workflows[name] = []
             for d in data[1].split(","):
@@ -31,8 +28,8 @@ class Day19(Day):
                 else:
                     workflows[name].append((d,))
         data = []
-        while (l := next(workflows_str, None)) is not None:
-            data.append({k[0]: int(k[1]) for k in data_pattern.findall(l)})
+        while (line := next(workflows_str, None)) is not None:
+            data.append({k[0]: int(k[1]) for k in data_pattern.findall(line)})
         count = 0
         for d in data:
             current_workflow = "in"
@@ -58,8 +55,8 @@ class Day19(Day):
         pattern = re.compile(r"([a-z]+){(.+)}")
         step_pattern = re.compile(r"([a-z])([<>])(-?\d+):([a-zAR]+)")
         workflows = {}
-        while (l := next(workflows_str)) != "":
-            data = pattern.findall(l)[0]
+        while (line := next(workflows_str)) != "":
+            data = pattern.findall(line)[0]
             name = data[0]
             workflows[name] = []
             for d in data[1].split(","):
