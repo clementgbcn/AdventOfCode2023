@@ -83,6 +83,8 @@ class Day23(Day):
         split = set()
         for i in range(height):
             for j in range(width):
+                if (i, j) in forest:
+                    continue
                 nb = 0
                 for d in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
                     p = (i + d[0], j + d[1])
@@ -91,9 +93,10 @@ class Day23(Day):
                     nb += 1
                 if nb > 2:
                     split.add((i, j))
-        split.add((0, 1))
-        split.add((height - 1, width - 2))
         edges = {}
+        end = (height - 1, width - 2)
+        start_neighbor, target = None, None
+        start_distance, end_distance = 0, 0
         for s in split:
             stack = [(s, 0)]
             visited = set()
@@ -106,6 +109,14 @@ class Day23(Day):
                 if current_point != s and current_point in split:
                     edges[s].append((current_point, distance))
                     continue
+                if current_point == start:
+                    start_neighbor = s
+                    start_distance = distance
+                    continue
+                if current_point == end:
+                    target = s
+                    end_distance = distance
+                    continue
                 for d in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
                     next_point = (current_point[0] + d[0], current_point[1] + d[1])
                     if (
@@ -115,13 +126,13 @@ class Day23(Day):
                     ):
                         continue
                     stack.append((next_point, distance + 1))
-        stack = [([start], {start}, 0)]
+        stack = [([start_neighbor], {start_neighbor}, start_distance)]
         max_distance = 0
         while len(stack) > 0:
             current_path, current_visited, distance = stack.pop()
             current_point = current_path[-1]
-            if current_point == (height - 1, width - 2):
-                max_distance = max(max_distance, distance)
+            if current_point == target:
+                max_distance = max(max_distance, distance + end_distance)
                 continue
             for next_point in edges[current_point]:
                 if next_point[0] in current_visited:
