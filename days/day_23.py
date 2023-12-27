@@ -126,20 +126,18 @@ class Day23(Day):
                     ):
                         continue
                     stack.append((next_point, distance + 1))
-        stack = [([start_neighbor], {start_neighbor}, start_distance)]
+        stack = [(start_neighbor, {start_neighbor}, start_distance)]
         max_distance = 0
         while len(stack) > 0:
-            current_path, current_visited, distance = stack.pop()
-            current_point = current_path[-1]
+            current_point, current_visited, distance = stack.pop()
             if current_point == target:
                 max_distance = max(max_distance, distance + end_distance)
                 continue
             for next_point in edges[current_point]:
                 if next_point[0] in current_visited:
                     continue
-                new_path = current_path + [next_point[0]]
                 new_visited = current_visited.union({next_point[0]})
-                stack.append((new_path, new_visited, distance + next_point[1]))
+                stack.append((next_point[0], new_visited, distance + next_point[1]))
         return max_distance
 
     def solution_first_star(self, input_value, input_type):
